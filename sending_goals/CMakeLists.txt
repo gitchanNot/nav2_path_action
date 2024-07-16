@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(follow_waypoints)
+project(sending_goals)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -16,13 +16,13 @@ find_package(geometry_msgs REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 # Build
-add_executable(follow_waypoints src/follow_waypoints.cpp)
-ament_target_dependencies(follow_waypoints rclcpp rclcpp_action nav2_msgs geometry_msgs)
+add_executable(sending_goals src/sending_goals.cpp)
+ament_target_dependencies(sending_goals rclcpp rclcpp_action nav2_msgs geometry_msgs)
 
 install(TARGETS
-  follow_waypoints
+  sending_goals
   DESTINATION lib/${PROJECT_NAME})
-
+  
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
