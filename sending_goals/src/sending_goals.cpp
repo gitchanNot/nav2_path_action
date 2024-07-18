@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "rclcpp/rclcpp.hpp"
 #include "nav2_msgs/action/navigate_through_poses.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
@@ -10,7 +12,7 @@ public:
     using GoalHandleSendingGoals = rclcpp_action::ClientGoalHandle<NavigateThroughPoses>;
 
     explicit SendingGoalsClient(const rclcpp::NodeOptions &options = rclcpp::NodeOptions())
-    : Node("sending_goals_client", options)
+        : Node("sending_goals_client", options)
     {
         this->client_ptr_ = rclcpp_action::create_client<NavigateThroughPoses>(
             this,
@@ -18,8 +20,7 @@ public:
 
         this->timer_ = this->create_wall_timer(
             std::chrono::milliseconds(500),
-            std::bind(&SendingGoalsClient::send_goals, this)
-        );
+            std::bind(&SendingGoalsClient::send_goals, this));
     }
 
 private:
@@ -82,15 +83,15 @@ private:
         goal_msg.poses[5].pose.orientation.z = 0.34;
         goal_msg.poses[5].pose.orientation.w = 0.94;
 
-        RCLCPP_INFO(this->get_logger(), "sending goals");
+        RCLCPP_INFO(this->get_logger(), "Sending goal to robot");
 
         auto send_goal_options = rclcpp_action::Client<NavigateThroughPoses>::SendGoalOptions();
         send_goal_options.goal_response_callback =
             std::bind(&SendingGoalsClient::goal_response_callback, this, std::placeholders::_1);
         send_goal_options.feedback_callback =
-            std::bind(&SendingGoalsClient::feedback_callback, this, std::placeholders::_1);
+            std::bind(&SendingGoalsClient::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
         send_goal_options.result_callback =
-        std::bind(&SendingGoalsClient::result_callback, this, std::placeholders::_1);
+            std::bind(&SendingGoalsClient::result_callback, this, std::placeholders::_1);
 
         this->client_ptr_->async_send_goal(goal_msg, send_goal_options);
     }
@@ -108,9 +109,11 @@ private:
     }
 
     void feedback_callback(
-        GoalHandleSendingGoals::SharedPtr)
+        GoalHandleSendingGoals::SharedPtr,
+        const std::shared_ptr<const NavigateThroughPoses::Feedback> feedback)
     {
-        RCLCPP_INFO(this->get_logger(), "Sending...");
+        RCLCPP_INFO(this->get_logger(), "Remain distance: [%.2f]",
+                    feedback->distance_remaining);
     }
 
     void result_callback(const GoalHandleSendingGoals::WrappedResult &result)
@@ -118,8 +121,15 @@ private:
         switch (result.code)
         {
         case rclcpp_action::ResultCode::SUCCEEDED:
-            RCLCPP_INFO(this->get_logger(), "Goal succeeded");
+        {
+            RCLCPP_INFO(this->get_logger(), "Sending succeeded");
+            
+            this->timer_ = this->create_wall_timer(
+                std::chrono::milliseconds(500),
+                std::bind(&SendingGoalsClient::send_goals, this));
+
             break;
+        }
         case rclcpp_action::ResultCode::ABORTED:
             RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
             break;
@@ -130,15 +140,14 @@ private:
             RCLCPP_ERROR(this->get_logger(), "Unknown result code");
             break;
         }
-        rclcpp::shutdown();
     }
 };
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<SendingGoalsClient>();
-  rclcpp::spin(node);
-  rclcpp::shutdown();
-  return 0;
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<SendingGoalsClient>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }
