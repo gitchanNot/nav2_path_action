@@ -32,7 +32,7 @@ public:
 private:
   rclcpp_action::Client<NavigateThroughPoses>::SharedPtr client_ptr_;
   rclcpp_action::Server<NavigateThroughPoses>::SharedPtr server_ptr_;
-  float distance = 1000;
+  float remain_distance;
 
   rclcpp_action::GoalResponse handle_goal(
       const rclcpp_action::GoalUUID &uuid,
@@ -82,7 +82,8 @@ private:
 
     rclcpp::Rate rate(1.0);
     auto feedback_msg = std::make_shared<NavigateThroughPoses::Feedback>();
-    feedback_msg->distance_remaining = distance;
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    feedback_msg->distance_remaining = remain_distance;
 
     while (rclcpp::ok())
     {
@@ -94,9 +95,9 @@ private:
         return;
       }
 
-      if (distance > 0.1)
+      if (remain_distance > 0.35)
       {
-        feedback_msg->distance_remaining = distance;
+        feedback_msg->distance_remaining = remain_distance;
         goal_handle->publish_feedback(feedback_msg);
       }
       else
@@ -130,9 +131,11 @@ private:
       GoalHandleNavigateThroughPosesClient::SharedPtr,
       const std::shared_ptr<const NavigateThroughPoses::Feedback> feedback)
   {
-    RCLCPP_INFO(this->get_logger(), "Remain distance: [%.2f]",
-                feedback->distance_remaining);
-    distance = feedback->distance_remaining;
+    remain_distance = feedback->distance_remaining;
+    // RCLCPP_INFO(this->get_logger(), "Remain Distance: [%.2f]",
+    //             feedback->distance_remaining);
+    RCLCPP_INFO(this->get_logger(), "Current Position: [%.2f, %.2f]",
+                feedback->current_pose.pose.position.x, feedback->current_pose.pose.position.y);
   }
 
   void result_callback(const GoalHandleNavigateThroughPosesClient::WrappedResult &result)
