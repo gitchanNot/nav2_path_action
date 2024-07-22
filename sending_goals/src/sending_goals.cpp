@@ -201,12 +201,15 @@ private:
         }
         case rclcpp_action::ResultCode::ABORTED:
             RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+            rclcpp::shutdown();
             break;
         case rclcpp_action::ResultCode::CANCELED:
             RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+            rclcpp::shutdown();
             break;
         default:
             RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+            rclcpp::shutdown();
             break;
         }
     }

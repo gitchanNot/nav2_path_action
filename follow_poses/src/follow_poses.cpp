@@ -32,6 +32,7 @@ public:
 private:
   rclcpp_action::Client<NavigateThroughPoses>::SharedPtr client_ptr_;
   rclcpp_action::Server<NavigateThroughPoses>::SharedPtr server_ptr_;
+  rclcpp_action::ResultCode sending_result = rclcpp_action::ResultCode::UNKNOWN;
   float remain_distance;
 
   rclcpp_action::GoalResponse handle_goal(
@@ -95,13 +96,14 @@ private:
         return;
       }
 
-      if (remain_distance > 0.35)
+      if (sending_result != rclcpp_action::ResultCode::SUCCEEDED)
       {
         feedback_msg->distance_remaining = remain_distance;
         goal_handle->publish_feedback(feedback_msg);
       }
       else
       {
+        sending_result = rclcpp_action::ResultCode::UNKNOWN;
         break;
       }
 
@@ -132,14 +134,13 @@ private:
       const std::shared_ptr<const NavigateThroughPoses::Feedback> feedback)
   {
     remain_distance = feedback->distance_remaining;
-    // RCLCPP_INFO(this->get_logger(), "Remain Distance: [%.2f]",
-    //             feedback->distance_remaining);
     RCLCPP_INFO(this->get_logger(), "Current Position: [%.2f, %.2f]",
                 feedback->current_pose.pose.position.x, feedback->current_pose.pose.position.y);
   }
 
   void result_callback(const GoalHandleNavigateThroughPosesClient::WrappedResult &result)
   {
+    sending_result = result.code;
     switch (result.code)
     {
     case rclcpp_action::ResultCode::SUCCEEDED:
@@ -147,12 +148,15 @@ private:
       break;
     case rclcpp_action::ResultCode::ABORTED:
       RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+      rclcpp::shutdown();
       break;
     case rclcpp_action::ResultCode::CANCELED:
       RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+      rclcpp::shutdown();
       break;
     default:
       RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+      rclcpp::shutdown();
       break;
     }
   }
