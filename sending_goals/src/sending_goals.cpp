@@ -4,6 +4,12 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
+std::vector<std::vector<std::vector<double>>> goal_list = {
+  {{-2, 0}, {-4, 0}, {-4, 1}, {-6, 1}},
+  {{-4, 1}, {-4, 0}, {-2, 0}, {1, 0.5}, {1, 2}, {3.5, 2}, {6, 2}, {6, 0.5}},
+  {{6, 2}, {3.5, 2}, {1, 2}, {-2, 0}}
+};
+
 class SendingGoalsClient : public rclcpp::Node
 {
 public:
@@ -39,119 +45,19 @@ private:
 
         std::vector<NavigateThroughPoses::Goal> goal_msgs;
 
-        auto goal_msg1 = NavigateThroughPoses::Goal();
-        goal_msg1.poses.resize(2);
-
-        goal_msg1.poses[0].header.frame_id = "map";
-        goal_msg1.poses[0].header.stamp = this->now();
-        goal_msg1.poses[0].pose.position.x = -1;
-        goal_msg1.poses[0].pose.position.y = 1.75;
-        goal_msg1.poses[0].pose.orientation.z = 0;
-        goal_msg1.poses[0].pose.orientation.w = 1;
-
-        goal_msg1.poses[1].header.frame_id = "map";
-        goal_msg1.poses[1].header.stamp = this->now();
-        goal_msg1.poses[1].pose.position.x = 1.25;
-        goal_msg1.poses[1].pose.position.y = 1.75;
-        goal_msg1.poses[1].pose.orientation.z = 0;
-        goal_msg1.poses[1].pose.orientation.w = 1;
-
-        goal_msgs.push_back(goal_msg1);
-
-        auto goal_msg2 = NavigateThroughPoses::Goal();
-        goal_msg2.poses.resize(2);
-
-        goal_msg2.poses[0].header.frame_id = "map";
-        goal_msg2.poses[0].header.stamp = this->now();
-        goal_msg2.poses[0].pose.position.x = 1.25;
-        goal_msg2.poses[0].pose.position.y = 1.75;
-        goal_msg2.poses[0].pose.orientation.z = 0;
-        goal_msg2.poses[0].pose.orientation.w = 1;
-
-        goal_msg2.poses[1].header.frame_id = "map";
-        goal_msg2.poses[1].header.stamp = this->now();
-        goal_msg2.poses[1].pose.position.x = 1.75;
-        goal_msg2.poses[1].pose.position.y = 0;
-        goal_msg2.poses[1].pose.orientation.z = -0.5;
-        goal_msg2.poses[1].pose.orientation.w = -0.5;
-
-        goal_msgs.push_back(goal_msg2);
-
-        auto goal_msg3 = NavigateThroughPoses::Goal();
-        goal_msg3.poses.resize(2);
-
-        goal_msg3.poses[0].header.frame_id = "map";
-        goal_msg3.poses[0].header.stamp = this->now();
-        goal_msg3.poses[0].pose.position.x = 1.75;
-        goal_msg3.poses[0].pose.position.y = 0;
-        goal_msg3.poses[0].pose.orientation.z = -0.7;
-        goal_msg3.poses[0].pose.orientation.w = -0.7;
-
-        goal_msg3.poses[1].header.frame_id = "map";
-        goal_msg3.poses[1].header.stamp = this->now();
-        goal_msg3.poses[1].pose.position.x = 1;
-        goal_msg3.poses[1].pose.position.y = -1.75;
-        goal_msg3.poses[1].pose.orientation.z = 1;
-        goal_msg3.poses[1].pose.orientation.w = 0;
-
-        goal_msgs.push_back(goal_msg3);
-
-        auto goal_msg4 = NavigateThroughPoses::Goal();
-        goal_msg4.poses.resize(2);
-
-        goal_msg4.poses[0].header.frame_id = "map";
-        goal_msg4.poses[0].header.stamp = this->now();
-        goal_msg4.poses[0].pose.position.x = 1;
-        goal_msg4.poses[0].pose.position.y = -1.75;
-        goal_msg4.poses[0].pose.orientation.z = 1;
-        goal_msg4.poses[0].pose.orientation.w = 0;
-
-        goal_msg4.poses[1].header.frame_id = "map";
-        goal_msg4.poses[1].header.stamp = this->now();
-        goal_msg4.poses[1].pose.position.x = -1;
-        goal_msg4.poses[1].pose.position.y = -1.75;
-        goal_msg4.poses[1].pose.orientation.z = 1;
-        goal_msg4.poses[1].pose.orientation.w = 0;
-
-        goal_msgs.push_back(goal_msg4);
-
-        auto goal_msg5 = NavigateThroughPoses::Goal();
-        goal_msg5.poses.resize(2);
-
-        goal_msg5.poses[0].header.frame_id = "map";
-        goal_msg5.poses[0].header.stamp = this->now();
-        goal_msg5.poses[0].pose.position.x = -1;
-        goal_msg5.poses[0].pose.position.y = -1.75;
-        goal_msg5.poses[0].pose.orientation.z = 1;
-        goal_msg5.poses[0].pose.orientation.w = 0;
-
-        goal_msg5.poses[1].header.frame_id = "map";
-        goal_msg5.poses[1].header.stamp = this->now();
-        goal_msg5.poses[1].pose.position.x = -1.75;
-        goal_msg5.poses[1].pose.position.y = 0;
-        goal_msg5.poses[1].pose.orientation.z = 0.5;
-        goal_msg5.poses[1].pose.orientation.w = 0.5;
-
-        goal_msgs.push_back(goal_msg5);
-
-        auto goal_msg6 = NavigateThroughPoses::Goal();
-        goal_msg6.poses.resize(2);
-
-        goal_msg6.poses[0].header.frame_id = "map";
-        goal_msg6.poses[0].header.stamp = this->now();
-        goal_msg6.poses[0].pose.position.x = -1.75;
-        goal_msg6.poses[0].pose.position.y = 0;
-        goal_msg6.poses[0].pose.orientation.z = 0.5;
-        goal_msg6.poses[0].pose.orientation.w = 0.5;
-
-        goal_msg6.poses[1].header.frame_id = "map";
-        goal_msg6.poses[1].header.stamp = this->now();
-        goal_msg6.poses[1].pose.position.x = -1;
-        goal_msg6.poses[1].pose.position.y = 1.75;
-        goal_msg6.poses[1].pose.orientation.z = 0;
-        goal_msg6.poses[1].pose.orientation.w = 1;
-
-        goal_msgs.push_back(goal_msg6);
+        for(int m = 0; m < goal_list.size(); m++) {
+            auto goal_msg1 = NavigateThroughPoses::Goal();
+            goal_msg1.poses.resize(goal_list[m].size());
+            for(int p = 0; p < goal_list[m].size(); p++) {
+                goal_msg1.poses[p].header.frame_id = "map";
+                goal_msg1.poses[p].header.stamp = this->now();
+                goal_msg1.poses[p].pose.position.x = goal_list[m][p][0];
+                goal_msg1.poses[p].pose.position.y = goal_list[m][p][1];
+                goal_msg1.poses[p].pose.orientation.z = 0;
+                goal_msg1.poses[p].poses.orientation.w = 1;
+            }
+            goal_msgs.push_back(goal_msg1);
+        }
 
         RCLCPP_INFO(this->get_logger(), "Sending goal to robot");
 
@@ -163,7 +69,7 @@ private:
         send_goal_options.result_callback =
             std::bind(&SendingGoalsClient::result_callback, this, std::placeholders::_1);
 
-        this->client_ptr_->async_send_goal(goal_msgs.at(i % 6), send_goal_options);
+        this->client_ptr_->async_send_goal(goal_msgs.at(i % goal_msgs.size()), send_goal_options);
     }
 
     void goal_response_callback(GoalHandleSendingGoals::SharedPtr goal_handle)

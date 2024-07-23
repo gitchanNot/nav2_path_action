@@ -83,7 +83,7 @@ private:
 
     rclcpp::Rate rate(1.0);
     auto feedback_msg = std::make_shared<NavigateThroughPoses::Feedback>();
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     feedback_msg->distance_remaining = remain_distance;
 
     while (rclcpp::ok())
